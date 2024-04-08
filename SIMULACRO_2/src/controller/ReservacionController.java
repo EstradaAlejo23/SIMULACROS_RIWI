@@ -1,5 +1,6 @@
 package controller;
 
+import entity.Avion;
 import entity.Pasajero;
 import entity.Reservacion;
 import entity.Vuelo;
@@ -61,34 +62,37 @@ public class ReservacionController {
     }
 
     public static void insert(){
-        String fecha = JOptionPane.showInputDialog("Ingresa la fecha de la cita: YY-MM-DD");
-        String asiento = JOptionPane.showInputDialog("Ingresa el asiento");
+
+            String fecha = JOptionPane.showInputDialog("Ingresa la fecha de la cita: YY-MM-DD");
+            String asiento = JOptionPane.showInputDialog("Ingresa el asiento ");
+
+            Object[] optionsPasajeros = Utils.listaAarray(PasajeroController.instanciarModel().findAll());
+            Object[] optionsVuelos = Utils.listaAarray(VueloController.instanciarModel().findAll());
 
 
-        Object[] optionsPasajeros = Utils.listaAarray(PasajeroController.instanciarModel().findAll());
-        Object[] optionsVuelos = Utils.listaAarray(VueloController.instanciarModel().findAll());
 
-        Pasajero pasajeroSeleccionado = (Pasajero) JOptionPane.showInputDialog(
-                null,
-                "Selecciona el Pasajero",
-                "",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                optionsPasajeros,
-                optionsPasajeros[0]
-        );
+            Pasajero pasajeroSeleccionado = (Pasajero) JOptionPane.showInputDialog(
+                    null,
+                    "Selecciona el Pasajero",
+                    "",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    optionsPasajeros,
+                    optionsPasajeros[0]
+            );
 
-        Vuelo vueloSeleccionado = (Vuelo) JOptionPane.showInputDialog(
-                null,
-                "Selecciona el vuelo",
-                "",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                optionsVuelos,
-                optionsVuelos[0]
-        );
+            Vuelo vueloSeleccionado = (Vuelo) JOptionPane.showInputDialog(
+                    null,
+                    "Selecciona el vuelo",
+                    "",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    optionsVuelos,
+                    optionsVuelos[0]
+            );
 
-        instanciarModel().insert(new Reservacion(fecha,asiento,pasajeroSeleccionado.getId(),pasajeroSeleccionado,vueloSeleccionado.getId(),vueloSeleccionado));
+
+            instanciarModel().insert(new Reservacion(fecha,asiento,pasajeroSeleccionado.getId(),pasajeroSeleccionado,vueloSeleccionado.getId(),vueloSeleccionado));
     }
 
     public static void delete(){

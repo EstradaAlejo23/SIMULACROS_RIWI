@@ -17,33 +17,54 @@ public class ReservacionModel implements CRUD {
 
         Connection objConnection = ConfigDB.openConnection();
         Reservacion objReservacion = (Reservacion) obj;
+        int contadorReservas = 0;
+        int contadorCapacidad = objReservacion.getObjVuelo().getObjAvion().getCapacidad();
+        String contadorAsiento = objReservacion.getAsiento();
 
         try{
-            String sql = "INSERT INTO reservacion (fecha_reservacion,asiento,id_pasajero,id_vuelo) VALUES (?,?,?,?);";
-            PreparedStatement objPrepare = objConnection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+            String sql = "SELECT * FROM reservacion INNER JOIN pasajero ON pasajero.id = reservacion.id_pasajero INNER JOIN vuelo ON vuelo.id = reservacion.id_vuelo;";
+            PreparedStatement objPrepare1 = objConnection.prepareStatement(sql);
+            ResultSet objResult1 = objPrepare1.executeQuery();
 
-            objPrepare.setDate(1, Date.valueOf(objReservacion.getFechaReservacion()));
-            objPrepare.setString(2,objReservacion.getAsiento());
-            objPrepare.setInt(3,objReservacion.getId_Pasajero());
-            objPrepare.setInt(4,objReservacion.getId_vuelo());
-
-            objPrepare.execute();
-
-            ResultSet objResult = objPrepare.getGeneratedKeys();
-
-            while(objResult.next()){
-                objReservacion.setId(objResult.getInt(1));
-
+            while(objResult1.next()){
+                contadorReservas++;
+                System.out.println(contadorReservas);
             }
-            JOptionPane.showMessageDialog(null,"Registro insertado correctamente");
-
-
-        }catch(SQLException e){
+        }catch (SQLException e){
             System.out.println("ERROR: "+e);
         }
 
-        ConfigDB.closeConnection();
-        return objReservacion;
+        if( contadorReservas < contadorCapacidad) {
+            try {
+                String sql1 = "INSERT INTO reservacion (fecha_reservacion,asiento,id_pasajero,id_vuelo) VALUES (?,?,?,?);";
+                PreparedStatement objPrepare = objConnection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS);
+
+                objPrepare.setDate(1, Date.valueOf(objReservacion.getFechaReservacion()));
+                objPrepare.setString(2, objReservacion.getAsiento());
+                objPrepare.setInt(3, objReservacion.getId_Pasajero());
+                objPrepare.setInt(4, objReservacion.getId_vuelo());
+
+                objPrepare.execute();
+
+
+                ResultSet objResult = objPrepare.getGeneratedKeys();
+
+                while (objResult.next()) {
+                    objReservacion.setId(objResult.getInt(1));
+
+                }
+                JOptionPane.showMessageDialog(null, "Registro insertado correctamente");
+
+
+            } catch (SQLException e) {
+                System.out.println("ERROR: " + e);
+            }
+            ConfigDB.closeConnection();
+            return objReservacion;
+        }else{
+            JOptionPane.showMessageDialog(null,"Las reservas superan la capacidad del avion");
+        }
+        return null;
     }
 
     @Override
